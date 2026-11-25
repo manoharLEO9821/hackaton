@@ -1,0 +1,57 @@
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+.hero {
+  text-align: center;
+  padding: 100px 20px;
+  background: linear-gradient(135deg, #0f766e, #14b8a6, #06b6d4);
+  color: white;
+}
+.hero h1 { font-size: 4rem; letter-spacing: 2px; }
+.tagline { font-size: 1.3rem; margin: 15px 0 30px; font-style: italic; }
+.hero-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
+
+.btn {
+  padding: 12px 24px; background: white; color: #0f766e;
+  text-decoration: none; border-radius: 8px; font-weight: bold;
+  transition: 0.3s;
+}
+.btn:hover { transform: scale(1.05); }
+.btn-outline { background: transparent; color: white; border: 2px solid white; }
+
+.section { padding: 60px 20px; max-width: 800px; margin: auto; }
+.section.alt { background: #f0fdfa; max-width: 100%; }
+.section h2 { color: #0f766e; margin-bottom: 10px; }
+.sub { color: #555; margin-bottom: 20px; }
+
+input, select, button {
+  padding: 10px; margin: 8px 5px 8px 0;
+  border: 1px solid #ccc; border-radius: 6px;
+  font-size: 1rem;
+}
+input[type="text"], input[type="number"] { width: 280px; }
+button {
+  background: #0f766e; color: white; border: none; cursor: pointer;
+}
+button:hover { background: #14b8a6; }
+
+.results { margin-top: 20px; }
+.doctor-card {
+  background: #f0fdfa; padding: 15px; border-left: 4px solid #14b8a6;
+  margin-bottom: 10px; border-radius: 6px;
+}
+.doctor-card button { margin-top: 8px; }
+
+.token-box {
+  background: #d1fae5; padding: 20px; border-radius: 10px; margin-top: 20px;
+}
+.organ-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px; margin: 15px 0;
+}
+.organ-grid label {
+  background: white; padding: 10px; border-radius: 6px;
+  border: 1px solid #ccc; cursor: pointer;
+}
+.msg { margin-top: 15px; padding: 12px; background: #d1fae5; border-radius: 8px; }
+.hidden { display: none; }
+footer { text-align: center; padding: 30px; background: #0f766e; color: white; }

@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MedAI — Care Beyond Cure</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    
+    /* HOME PAGE STYLES */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f766e, #14b8a6, #06b6d4);
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    .hero h1 { font-size: 4rem; letter-spacing: 2px; margin-bottom: 10px; }
+    .tagline { font-size: 1.3rem; font-style: italic; margin-bottom: 50px; }
+    
+    .cards-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+    
+    .card {
+      background: white;
+      color: #333;
+      width: 280px;
+      padding: 30px 20px;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: 0.3s;
+      text-align: center;
+    }
+    .card:hover { transform: translateY(-10px); box-shadow: 0 15px 25px rgba(0,0,0,0.2); }
+    .card h3 { color: #0f766e; margin-bottom: 10px; font-size: 1.4rem; }
+    .card p { color: #666; font-size: 0.95rem; }
+    .card-icon { font-size: 3rem; margin-bottom: 15px; }
+
+    /* VIEW SECTIONS */
+    .view-section { display: none; padding: 60px 20px; max-width: 800px; margin: auto; min-height: 100vh; }
+    .view-section.active { display: block; }
+    
+    .back-btn {
+      display: inline-block; margin-bottom: 20px; padding: 10px 20px;
+      background: #0f766e; color: white; text-decoration: none;
+      border-radius: 6px; cursor: pointer; border: none; font-size: 1rem;
+    }
+    .back-btn:hover { background: #14b8a6; }
+
+    /* FORM ELEMENTS */
+    .section-title { color: #0f766e; margin-bottom: 10px; font-size: 2rem; }
+    .sub { color: #555; margin-bottom: 20px; }
+    input, select, button {
+      padding: 10px; margin: 8px 5px 8px 0;
+      border: 1px solid #ccc; border-radius: 6px;
+      font-size: 1rem;
+    }
+    input[type="text"], input[type="tel"], input[type="number"] { width: 100%; max-width: 300px; }
+    .action-btn {
+      background: #0f766e; color: white; border: none; cursor: pointer; padding: 10px 20px;
+    }
+    .action-btn:hover { background: #14b8a6; }
+
+    /* RESULTS & RECEIPTS */
+    .doctor-card {
+      background: #f0fdfa; padding: 15px; border-left: 4px solid #14b8a6;
+      margin-bottom: 10px; border-radius: 6px;
+    }
+    .doctor-card button { margin-top: 8px; }
+    
+    .token-box { background: #d1fae5; padding: 20px; border-radius: 10px; margin-top: 20px; border: 1px solid #14b8a6; }
+    .organ-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px; margin: 15px 0;
+    }
+    .organ-grid label {
+      background: #f9f9f9; padding: 10px; border-radius: 6px;
+      border: 1px solid #ccc; cursor: pointer;
+    }
+    .msg { margin-top: 15px; padding: 12px; border-radius: 8px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ================= 1. HOME PAGE ================= -->
+  <div id="homeView" class="hero">
+    <h1>MedAI</h1>
+    <p class="tagline">"Where compassion meets care — every life matters."</p>
+    
+    <div class="cards-container">
+      <div class="card" onclick="showSection('appointmentView')">
+        <div class="card-icon">📅</div>
+        <h3>Appointments</h3>
+        <p>Search doctors by your health problem and get a token.</p>
+      </div>
+      
+      <div class="card" onclick="showSection('bloodView')">
+        <div class="card-icon">🩸</div>
+        <h3>Donate Blood</h3>
+        <p>Specify your blood group and how much you want to donate.</p>
+      </div>
+      
+      <div class="card" onclick="showSection('organView')">
+        <div class="card-icon">❤️</div>
+        <h3>Donate Organs</h3>
+        <p>Select which body parts you are willing to donate.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. APPOINTMENT VIEW ================= -->
+  <div id="appointmentView" class="view-section">
+    <button class="back-btn" onclick="goHome()">← Back to Home</button>
+    
+    <h2 class="section-title">📅 Book an Appointment</h2>
+    <p class="sub">Search a doctor by your health problem</p>
+
+    <input type="text" id="problemInput" placeholder="e.g. heart, skin, bone, eye...">
+    <button class="action-btn" onclick="searchDoctor()">Search Doctor</button>
+
+    <div id="doctorResults" style="margin-top: 20px;"></div>
+
+    <div id="tokenBox" class="token-box hidden">
+      <h3>✅ Appointment Confirmed</h3>
+      <p>Doctor: <span id="tDoctor"></span></p>
+      <p>Your Token: <strong id="tToken"></strong></p>
+      <p>Please arrive at: <strong id="tTime"></strong></p>
+    </div>
+  </div>
+
+  <!-- ================= 3. BLOOD VIEW ================= -->
+  <div id="bloodView" class="view-section">
+    <button class="back-btn" onclick="goHome()">← Back to Home</button>
+    
+    <h2 class="section-title">🩸 Donate Blood</h2>
+    <p class="sub">Enter your details to generate a donation slip</p>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px;">
+      <input type="text" id="bloodName" placeholder="Your Full Name">
+      <input type="tel" id="bloodPhone" placeholder="Mobile Number (10 digits)">
+      <select id="bloodGroup">
+        <option value="">Select Blood Group</option>
+        <option>A+</option><option>A-</option>
+        <option>B+</option><option>B-</option>
+        <option>O+</option><option>O-</option>
+        <option>AB+</option><option>AB-</option>
+      </select>
+      <input type="number" id="bloodQty" placeholder="Quantity in ml (e.g. 450)" min="100" max="500">
+      <button class="action-btn" onclick="submitBlood()">Generate Donation Slip</button>
+    </div>
+
+    <div id="bloodMsg" class="msg hidden">
+      <h3 style="color: #0f766e; margin-bottom: 10px;">🩸 Blood Donation Slip</h3>
+      <p><strong>Donor Name:</strong> <span id="rName"></span></p>
+      <p><strong>Mobile:</strong> <span id="rPhone"></span></p>
+      <p><strong>Blood Group:</strong> <span id="rGroup"></span></p>
+      <p><strong>Quantity:</strong> <span id="rQty"></span> ml</p>
+      <p><strong>Donation ID:</strong> <span id="rId"></span></p>
+      <hr style="margin: 10px 0; border: 1px solid #14b8a6;">
+      <p style="font-size: 1rem; font-weight: bold; color: #b91c1c; margin-top: 10px;">
+        📍 Please visit the hospital (MedAI Blood Bank, Ward B) with this ID to complete your donation.
+      </p>
+    </div>
+  </div>
+
+  <!-- ================= 4. ORGAN VIEW ================= -->
+  <div id="organView" class="view-section">
+    <button class="back-btn" onclick="goHome()">← Back to Home</button>
+    
+    <h2 class="section-title">❤️ Donate Body Organs</h2>
+    <p class="sub">Select the organs you want to donate and enter your details.</p>
+
+    <div class="organ-grid">
+      <label><input type="checkbox" value="Heart"> Heart</label>
+      <label><input type="checkbox" value="Kidney"> Kidney</label>
+      <label><input type="checkbox" value="Liver"> Liver</label>
+      <label><input type="checkbox" value="Lungs"> Lungs</label>
+      <label><input type="checkbox" value="Eyes"> Eyes</label>
+      <label><input type="checkbox" value="Pancreas"> Pancreas</label>
+      <label><input type="checkbox" value="Skin"> Skin</label>
+      <label><input type="checkbox" value="Bone Marrow"> Bone Marrow</label>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; max-width: 300px;">
+      <input type="text" id="donorName" placeholder="Your Full Name">
+      <input type="tel" id="donorPhone" placeholder="Mobile Number (10 digits)">
+      <button class="action-btn" onclick="submitOrgan()">Generate Pledge Slip</button>
+    </div>
+
+    <!-- Organ Receipt Box -->
+    <div id="organMsg" class="msg hidden">
+      <h3 style="color: #0f766e; margin-bottom: 10px;">❤️ Organ Donation Pledge</h3>
+      <p><strong>Donor Name:</strong> <span id="oName"></span></p>
+      <p><strong>Mobile:</strong> <span id="oPhone"></span></p>
+      <p><strong>Organs Pledged:</strong> <span id="oOrgans"></span></p>
+      <p><strong>Pledge ID:</strong> <span id="oId"></span></p>
+      <hr style="margin: 10px 0; border: 1px solid #14b8a6;">
+      <p style="font-size: 1rem; font-weight: bold; color: #b91c1c; margin-top: 10px;">
+        📍 Please visit the hospital (MedAI Organ Donation Desk, Ground Floor) with this ID to finalize your pledge.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ---- NAVIGATION ----
+    function showSection(sectionId) {
+      document.getElementById('homeView').style.display = 'none';
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+    }
+
+    function goHome() {
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById('homeView').style.display = 'flex';
+    }
+
+    // ---- APPOINTMENT ----
+    const doctors = [
+      { name: "Dr. Arjun Mehta", specialty: "Cardiologist", problems: ["heart", "chest", "bp"], time: "10:00 AM" },
+      { name: "Dr. Priya Sharma", specialty: "Dermatologist", problems: ["skin", "acne", "rash"], time: "11:30 AM" },
+      { name: "Dr. Ravi Kumar", specialty: "Orthopedic", problems: ["bone", "joint", "fracture"], time: "2:00 PM" },
+      { name: "Dr. Sneha Patel", specialty: "Ophthalmologist", problems: ["eye", "vision"], time: "9:00 AM" },
+      { name: "Dr. Vikram Rao", specialty: "Neurologist", problems: ["brain", "headache", "nerve"], time: "4:00 PM" },
+      { name: "Dr. Anjali Nair", specialty: "General Physician", problems: ["fever", "cold", "general"], time: "8:00 AM" }
+    ];
+
+    let tokenCounter = 100;
+
+    function searchDoctor() {
+      const query = document.getElementById("problemInput").value.toLowerCase().trim();
+      const results = document.getElementById("doctorResults");
+      results.innerHTML = "";
+
+      if (!query) { results.innerHTML = "<p>Please enter a health problem.</p>"; return; }
+
+      const matches = doctors.filter(d =>
+        d.problems.some(p => p.includes(query)) ||
+        d.specialty.toLowerCase().includes(query)
+      );
+
+      if (matches.length === 0) {
+        results.innerHTML = "<p>No doctor found. Try: heart, skin, bone, eye, brain, fever.</p>";
+        return;
+      }
+
+      matches.forEach(doc => {
+        results.innerHTML += `
+          <div class="doctor-card">
+            <strong>${doc.name}</strong> — ${doc.specialty}<br>
+            Available at: ${doc.time}<br>
+            <button class="action-btn" onclick="confirmAppointment('${doc.name}', '${doc.time}')">Confirm Appointment</button>
+          </div>`;
+      });
+    }
+
+    function confirmAppointment(name, time) {
+      tokenCounter++;
+      document.getElementById("tokenBox").classList.remove("hidden");
+      document.getElementById("tDoctor").textContent = name;
+      document.getElementById("tToken").textContent = "T-" + tokenCounter;
+      document.getElementById("tTime").textContent = time;
+    }
+
+    // ---- BLOOD ----
+    function submitBlood() {
+      const name = document.getElementById("bloodName").value.trim();
+      const phone = document.getElementById("bloodPhone").value.trim();
+      const group = document.getElementById("bloodGroup").value;
+      const qty = document.getElementById("bloodQty").value;
+      const msgBox = document.getElementById("bloodMsg");
+
+      if (!name || !phone || !group || !qty || qty < 100) {
+        msgBox.classList.remove("hidden");
+        msgBox.style.background = "#fee2e2";
+        msgBox.style.border = "1px solid #ef4444";
+        msgBox.innerHTML = "⚠️ Please enter your name, mobile number, select a blood group, and enter quantity (min 100 ml).";
+        return;
+      }
+
+      const donId = "BL-" + Math.floor(1000 + Math.random() * 9000);
+
+      document.getElementById("rName").textContent = name;
+      document.getElementById("rPhone").textContent = phone;
+      document.getElementById("rGroup").textContent = group;
+      document.getElementById("rQty").textContent = qty;
+      document.getElementById("rId").textContent = donId;
+
+      msgBox.classList.remove("hidden");
+      msgBox.style.background = "#d1fae5";
+      msgBox.style.border = "1px solid #14b8a6";
+    }
+
+    // ---- ORGAN (UPDATED WITH PHONE & HOSPITAL INSTRUCTION) ----
+    function submitOrgan() {
+      const name = document.getElementById("donorName").value.trim();
+      const phone = document.getElementById("donorPhone").value.trim();
+      const organs = [...document.querySelectorAll(".organ-grid input:checked")].map(i => i.value);
+      const msgBox = document.getElementById("organMsg");
+
+      // Validation
+      if (!name || !phone || organs.length === 0) {
+        msgBox.classList.remove("hidden");
+        msgBox.style.background = "#fee2e2";
+        msgBox.style.border = "1px solid #ef4444";
+        msgBox.innerHTML = "⚠️ Please enter your name, mobile number, and select at least one organ.";
+        return;
+      }
+
+      // Generate a random ID like ORG-5812
+      const pledgeId = "ORG-" + Math.floor(1000 + Math.random() * 9000);
+
+      // Populate the slip
+      document.getElementById("oName").textContent = name;
+      document.getElementById("oPhone").textContent = phone;
+      document.getElementById("oOrgans").textContent = organs.join(", ");
+      document.getElementById("oId").textContent = pledgeId;
+
+      // Show slip
+      msgBox.classList.remove("hidden");
+      msgBox.style.background = "#d1fae5";
+      msgBox.style.border = "1px solid #14b8a6";
+    }
+  </script>
+</body>
+</html>
